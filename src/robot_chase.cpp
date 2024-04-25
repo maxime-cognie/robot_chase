@@ -67,22 +67,23 @@ private:
         error_distance = sqrt(
             t.transform.translation.x * t.transform.translation.x +
             t.transform.translation.y * t.transform.translation.y);
-        error_distance = error_distance >= 0.357 ?
-            error_distance : 0;
+        error_distance = error_distance;
         
         error_yaw = atan2(
             t.transform.translation.y,
             t.transform.translation.x);
-        error_yaw = error_distance >= 0.357 ?
-            error_yaw : 0;
         
         geometry_msgs::msg::Twist cmd_vel;
-        const double kp_distance = 0.2;
+        const double kp_distance = 0.4;
         const double kp_yaw = 2.0 / M_PI;
-        
-        cmd_vel.linear.x = (kp_distance * error_distance > 1.5)?
-            1.5 : kp_distance * error_distance;
-        cmd_vel.angular.z = kp_yaw * error_yaw;
+
+        cmd_vel.linear.x = ((kp_distance * error_distance > 1.5)?
+            1.5 : kp_distance * error_distance) < 0.1 ?
+            0.1 : kp_distance * error_distance;
+        cmd_vel.linear.x = error_distance >= 0.357 ?
+           cmd_vel.linear.x : 0.0; 
+        cmd_vel.angular.z = error_distance >= 0.357 ?
+            kp_yaw * error_yaw : 0.0;
 
         publisher_->publish(cmd_vel);
     }
