@@ -67,11 +67,15 @@ private:
         error_distance = sqrt(
             t.transform.translation.x * t.transform.translation.x +
             t.transform.translation.y * t.transform.translation.y);
+        error_distance = error_distance >= 0.357 ?
+            error_distance : 0;
         
         error_yaw = atan2(
             t.transform.translation.y,
             t.transform.translation.x);
-
+        error_yaw = error_distance >= 0.357 ?
+            error_yaw : 0;
+        
         geometry_msgs::msg::Twist cmd_vel;
         const double kp_distance = 0.2;
         const double kp_yaw = 2.0 / M_PI;
